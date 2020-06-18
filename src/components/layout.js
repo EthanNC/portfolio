@@ -8,11 +8,23 @@
 import React from "react"
 import PropTypes from "prop-types"
 import { useStaticQuery, graphql } from "gatsby"
-
+import {styled} from "twin.macro"
 import Header from "./header"
-import "./layout.css"
+import { ThemeProvider } from 'emotion-theming'
+import colors from '../../colors';
 
-const Layout = ({ children }) => {
+const DefaultBackground = () => <div />;
+
+const theme = {
+  colors,
+  fonts: {
+    body: 'Cabin, Open Sans, sans-serif',
+    heading: 'inherit',
+    monospace: 'monospace',
+  },
+};
+
+const Layout = ({ children, Background=DefaultBackground }) => {
   const data = useStaticQuery(graphql`
     query SiteTitleQuery {
       site {
@@ -23,23 +35,38 @@ const Layout = ({ children }) => {
     }
   `)
 
+  const Wrapper=styled.div`
+    min-height: 100vh;
+    min-width: 320px;
+    max-width: 1366px;
+    display: flex;
+    margin: auto;
+    flex: 0 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    padding: 5em 1em;
+    scroll-behavior: smooth;
+    @media (max-width: 400px) {
+      padding: 2em 1em;
+    }
+`;
+
+
+
   return (
     <>
-      <Header siteTitle={data.site.siteMetadata.title} />
-      <div
-        style={{
-          margin: `0 auto`,
-          maxWidth: 960,
-          padding: `0 1.0875rem 1.45rem`,
-        }}
-      >
-        <main>{children}</main>
-        <footer>
-          © {new Date().getFullYear()}, Built with
+    <ThemeProvider theme={theme}>
+            <Header siteTitle={data.site.siteMetadata.title} />
+      <Background/>
+      <Wrapper>
+        {children}
+      </Wrapper>
+      {/* <footer>
+          © {new Date().getFullYear()} Ethan Cumming -  Built with
           {` `}
           <a href="https://www.gatsbyjs.org">Gatsby</a>
-        </footer>
-      </div>
+        </footer> */}
+    </ThemeProvider>
     </>
   )
 }
